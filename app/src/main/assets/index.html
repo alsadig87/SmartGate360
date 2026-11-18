@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10243a">
+<meta name="description" content="SmartGate 360 - Industrial gate guard demo">
+<title>SmartGate 360</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--navy:#10243a;--navy2:#173954;--teal:#11a6a0;--bg:#f2f5f8;--card:#fff;--ink:#172b3d;--muted:#6b7c8c;--line:#e3eaf0;--red:#c83e4d;--green:#16865b;--amber:#ad7412}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:white;padding:20px 18px 24px;border-radius:0 0 22px 22px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.brand{font-size:20px;font-weight:800;letter-spacing:.2px}.sub{font-size:12px;color:#c4d5e3;margin-top:3px}
+button,select,input{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:12px 15px;font-weight:700}
+.lang{background:#ffffff1c;color:white;border:1px solid #ffffff45;padding:8px 12px}
+main{max-width:760px;margin:auto;padding:16px 14px 40px}.statusbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.pill{font-size:12px;padding:6px 10px;border-radius:99px;background:#ffffff19;color:#e8f2f8}
+.tabs{display:flex;gap:8px;overflow:auto;margin:0 0 14px}.tab{background:#e5edf3;color:#35516a;white-space:nowrap;padding:10px 13px}.tab.active{background:var(--navy);color:white}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:13px;box-shadow:0 3px 12px #10243a08}
+h2{font-size:17px;margin:0 0 13px}h3{font-size:14px;margin:0 0 10px}.muted{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:11px}.field label{font-size:12px;color:#526679;font-weight:700}input,select{width:100%;border:1px solid #d9e2e9;background:#fff;border-radius:11px;padding:12px;color:var(--ink);min-height:45px;outline:none}input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px #11a6a018}
+.primary{background:var(--teal);color:white;width:100%;margin-top:5px}.secondary{background:#eaf1f5;color:#25445d}.danger{background:#fff0f1;color:var(--red)}.check{display:flex;gap:10px;align-items:flex-start;background:#f5f8fa;padding:12px;border-radius:12px;font-size:13px;margin:8px 0 12px}.check input{width:18px;min-height:18px;margin:1px 0}
+.result{padding:14px;border-radius:13px;margin-top:12px;display:none}.result.ok{display:block;background:#eaf7f1;border:1px solid #bfe6d2;color:#126746}.result.no{display:block;background:#fff0f1;border:1px solid #f0c6cb;color:#a32e3c}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#f5f8fa;border-radius:12px;padding:12px}.stat b{font-size:22px;display:block}.stat span{font-size:11px;color:var(--muted)}
+.logitem{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:9px}.logtop{display:flex;justify-content:space-between;gap:8px;align-items:center}.tag{font-size:11px;border-radius:99px;padding:5px 8px;font-weight:800}.tag.ok{background:#e6f5ed;color:#13734d}.tag.no{background:#fff0f1;color:#b33240}.logmeta{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.7}
+.login{max-width:420px;margin:28px auto}.hidden{display:none!important}.foot{text-align:center;color:#8796a3;font-size:11px;padding:12px}
+@media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.brand{font-size:18px}.stats{gap:6px}.stat{padding:10px}.stat b{font-size:19px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="top"><div><div class="brand">◈ SmartGate 360</div><div class="sub" data-i="subtitle">نظام ذكي لمراقبة حركة المواد عند البوابات</div></div><button class="lang" id="langBtn">EN</button></div>
+ <div class="statusbar"><span class="pill" data-i="demo">وضع تجريبي</span><span class="pill" id="userPill">GUARD-001</span><span class="pill" data-i="offline">بيانات محفوظة على هذا الجهاز</span></div>
+</header>
+<main>
+<section id="loginView" class="login card">
+ <h2 data-i="loginTitle">دخول فرد الأمن</h2>
+ <p class="muted" data-i="loginHint">بيانات دخول تجريبية — لا تستخدم بيانات الشركة الحقيقية</p>
+ <div class="field"><label data-i="username">اسم المستخدم</label><input id="username" value="guard01" autocomplete="username"></div>
+ <div class="field"><label data-i="password">الرقم السري التجريبي</label><input id="password" type="password" value="1234" autocomplete="current-password"></div>
+ <button class="primary" id="loginBtn" data-i="login">دخول</button>
+ <p class="muted" style="margin-top:10px" data-i="demoCred">للتجربة: guard01 / 1234</p>
+</section>
+<section id="appView" class="hidden">
+ <div class="tabs">
+  <button class="tab active" data-tab="movement" data-i="newMovement">حركة جديدة</button>
+  <button class="tab" data-tab="history" data-i="history">سجل الحركات</button>
+  <button class="tab" data-tab="guide" data-i="guide">دليل التجربة</button>
+ </div>
+ <div id="movementPane">
+  <div class="card">
+   <h2 data-i="movementTitle">تسجيل حركة مواد</h2>
+   <p class="muted" data-i="movementHint">املأ البيانات ثم حاكِ قراءة RFID والتحقق من التصريح.</p>
+   <div class="grid">
+    <div class="field"><label data-i="gate">البوابة</label><select id="gate"><option>Gate 1 / بوابة 1</option><option>Gate 2 / بوابة 2</option><option>Gate 3 / بوابة 3</option><option>Warehouse Gate / بوابة المخازن</option></select></div>
+    <div class="field"><label data-i="direction">اتجاه الحركة</label><select id="direction"><option value="out" data-i="out">خروج</option><option value="in" data-i="in">دخول</option></select></div>
+    <div class="field"><label data-i="employee">رقم الموظف</label><input id="employee" value="EMP-001"></div>
+    <div class="field"><label data-i="vehicle">رقم السيارة</label><input id="vehicle" placeholder="مثال: 12345"></div>
+    <div class="field"><label data-i="material">المادة / الصنف</label><select id="material"><option value="MAT-1001">MAT-1001 — Raw materials / مواد خام</option><option value="MAT-1002">MAT-1002 — Spare parts / قطع غيار</option><option value="MAT-1003">MAT-1003 — Industrial equipment / معدات صناعية</option><option value="MAT-1004">MAT-1004 — Material container / حاوية مواد</option></select></div>
+    <div class="field"><label data-i="quantity">الكمية</label><input id="quantity" type="number" min="1" value="3"></div>
+   </div>
+   <div class="field"><label data-i="tagid">معرّف RFID التجريبي</label><input id="tagid" value="EPC-3000-0001"></div>
+   <label class="check"><input type="checkbox" id="permit" checked><span data-i="permit">يوجد تصريح معتمد لهذه الحركة</span></label>
+   <label class="check"><input type="checkbox" id="match" checked><span data-i="match">المواد المقروءة تطابق التصريح</span></label>
+   <button class="primary" id="scanBtn" data-i="scan">محاكاة قراءة RFID والتحقق</button>
+   <div id="result" class="result" role="status"></div>
+  </div>
+  <div class="card"><h3 data-i="quickStats">ملخص اليوم على هذا الجهاز</h3><div class="stats"><div class="stat"><b id="totalCount">0</b><span data-i="total">إجمالي الحركات</span></div><div class="stat"><b id="approvedCount">0</b><span data-i="approved">مقبولة</span></div><div class="stat"><b id="rejectedCount">0</b><span data-i="rejected">مرفوضة</span></div></div></div>
+ </div>
+ <div id="historyPane" class="hidden">
+  <div class="card"><div class="logtop"><h2 data-i="historyTitle">سجل الحركات</h2><button class="secondary" id="exportBtn" data-i="export">تصدير CSV</button></div><div id="historyList"></div><button class="danger" id="clearBtn" style="width:100%;margin-top:12px" data-i="clear">مسح سجل التجربة</button></div>
+ </div>
+ <div id="guidePane" class="hidden">
+  <div class="card"><h2 data-i="guideTitle">كيف تختبر النموذج؟</h2><ol id="guideList" style="line-height:2;font-size:14px"><li>اترك التصريح ومطابقة المواد محددين ثم نفّذ المحاكاة؛ يجب قبول الحركة.</li><li>أزل علامة التصريح ثم نفّذ المحاكاة؛ يجب رفض الخروج.</li><li>أعد التصريح وأزل مطابقة المواد؛ يجب تحويل الحالة للمراجعة ورفض المرور.</li><li>افتح سجل الحركات لمراجعة النتائج وتصديرها.</li></ol><p class="muted" data-i="limitations">هذه محاكاة برمجية فقط: لا يوجد قارئ RFID أو كاميرا أو حاجز فعلي، ولا تتصل بأنظمة الشركة.</p></div>
+  <div class="card"><h3 data-i="safetyTitle">تنبيه أمني</h3><p class="muted" data-i="safety">لا تعتمد على هذا النموذج لاتخاذ قرار دخول أو خروج حقيقي. التطبيق لا يتحكم بالحواجز ولا يتحقق من تصاريح فعلية. يلزم اعتماد الشركة واختبار السلامة والتكامل قبل التشغيل.</p></div>
+ </div>
+ <div class="foot" data-i="footer">SmartGate 360 • Prototype • Local demo data only</div>
+ <button class="secondary" id="logoutBtn" style="width:100%" data-i="logout">تسجيل الخروج</button>
+</section>
+</main>
+<script>
+const dict={
+ar:{subtitle:"نظام ذكي لمراقبة حركة المواد عند البوابات",demo:"وضع تجريبي",offline:"بيانات محفوظة على هذا الجهاز",loginTitle:"دخول فرد الأمن",loginHint:"بيانات دخول تجريبية — لا تستخدم بيانات الشركة الحقيقية",username:"اسم المستخدم",password:"الرقم السري التجريبي",login:"دخول",demoCred:"للتجربة: guard01 / 1234",newMovement:"حركة جديدة",history:"سجل الحركات",guide:"دليل التجربة",movementTitle:"تسجيل حركة مواد",movementHint:"املأ البيانات ثم حاكِ قراءة RFID والتحقق من التصريح.",gate:"البوابة",direction:"اتجاه الحركة",out:"خروج",in:"دخول",employee:"رقم الموظف",vehicle:"رقم السيارة",material:"المادة / الصنف",quantity:"الكمية",tagid:"معرّف RFID التجريبي",permit:"يوجد تصريح معتمد لهذه الحركة",match:"المواد المقروءة تطابق التصريح",scan:"محاكاة قراءة RFID والتحقق",quickStats:"ملخص الحركات على هذا الجهاز",total:"إجمالي الحركات",approved:"مقبولة",rejected:"مرفوضة",historyTitle:"سجل الحركات",export:"تصدير CSV",clear:"مسح سجل التجربة",guideTitle:"كيف تختبر النموذج؟",limitations:"هذه محاكاة برمجية فقط: لا يوجد قارئ RFID أو كاميرا أو حاجز فعلي، ولا تتصل بأنظمة الشركة.",safetyTitle:"تنبيه أمني",safety:"لا تعتمد على هذا النموذج لاتخاذ قرار دخول أو خروج حقيقي. التطبيق لا يتحكم بالحواجز ولا يتحقق من تصاريح فعلية. يلزم اعتماد الشركة واختبار السلامة والتكامل قبل التشغيل.",footer:"SmartGate 360 • نموذج أولي • بيانات محلية تجريبية فقط",logout:"تسجيل الخروج",accepted:"تم قبول الحركة التجريبية",denied:"تم رفض الحركة التجريبية",permitMissing:"لا يوجد تصريح معتمد",mismatch:"المواد لا تطابق التصريح",review:"النتيجة: مرفوضة — راجع مسؤول الأمن قبل أي إجراء",empty:"لا توجد حركات مسجلة بعد.",time:"الوقت",statusOk:"مقبولة",statusNo:"مرفوضة",loginError:"بيانات الدخول غير صحيحة",saved:"تم حفظ الحركة في سجل الجهاز",confirmClear:"هل تريد مسح كل سجل التجربة؟",exportEmpty:"لا توجد بيانات للتصدير",vehicleRequired:"أدخل رقم السيارة",employeeRequired:"أدخل رقم الموظف",entryOk:"تم تسجيل الدخول التجريبي",directionIn:"دخول",directionOut:"خروج"},
+en:{subtitle:"Intelligent material movement monitoring at gates",demo:"DEMO MODE",offline:"Data stored on this device",loginTitle:"Guard Sign In",loginHint:"Demo credentials — never use real company credentials",username:"Username",password:"Demo password",login:"Sign in",demoCred:"Demo: guard01 / 1234",newMovement:"New movement",history:"Movement log",guide:"Demo guide",movementTitle:"Register material movement",movementHint:"Enter details, then simulate RFID reading and permit validation.",gate:"Gate",direction:"Direction",out:"Exit",in:"Entry",employee:"Employee ID",vehicle:"Vehicle plate",material:"Material / Item",quantity:"Quantity",tagid:"Demo RFID identifier",permit:"Approved permit exists for this movement",match:"Scanned materials match the permit",scan:"Simulate RFID scan & validate",quickStats:"Movement summary on this device",total:"Total movements",approved:"Approved",rejected:"Rejected",historyTitle:"Movement log",export:"Export CSV",clear:"Clear demo log",guideTitle:"How to test the demo",limitations:"Software simulation only: no physical RFID reader, camera, barrier, or connection to company systems.",safetyTitle:"Security notice",safety:"Do not use this demo to make real entry or exit decisions. It does not control barriers or validate real permits. Company approval, safety testing and integration are required before deployment.",footer:"SmartGate 360 • Prototype • Local demo data only",logout:"Sign out",accepted:"Demo movement approved",denied:"Demo movement rejected",permitMissing:"No approved permit",mismatch:"Scanned materials do not match permit",review:"Result: REJECTED — refer to security supervisor before any action",empty:"No movements recorded yet.",time:"Time",statusOk:"APPROVED",statusNo:"REJECTED",loginError:"Incorrect demo credentials",saved:"Movement saved to this device",confirmClear:"Clear the entire demo log?",exportEmpty:"No data to export",vehicleRequired:"Enter vehicle plate",employeeRequired:"Enter employee ID",entryOk:"Demo entry recorded",directionIn:"Entry",directionOut:"Exit"}
+};
+let lang=localStorage.getItem("sg_lang")||"ar", logs=JSON.parse(localStorage.getItem("sg_logs")||"[]");
+const $=id=>document.getElementById(id), t=k=>dict[lang][k]||k;
+function applyLang(){document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.querySelectorAll("[data-i]").forEach(el=>{let k=el.dataset.i;if(dict[lang][k])el.textContent=dict[lang][k]});$("langBtn").textContent=lang==="ar"?"EN":"عربي";renderStats();renderHistory()}
+$("langBtn").onclick=()=>{lang=lang==="ar"?"en":"ar";localStorage.setItem("sg_lang",lang);applyLang()};
+$("loginBtn").onclick=()=>{if($("username").value.trim()==="guard01"&&$("password").value==="1234"){$("loginView").classList.add("hidden");$("appView").classList.remove("hidden");$("userPill").textContent=$("username").value.toUpperCase()}else alert(t("loginError"))};
+$("logoutBtn").onclick=()=>{$("appView").classList.add("hidden");$("loginView").classList.remove("hidden")};
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));["movement","history","guide"].forEach(p=>$(p+"Pane").classList.toggle("hidden",p!==b.dataset.tab));if(b.dataset.tab==="history")renderHistory()});
+function materialName(){return $("material").selectedOptions[0].textContent}
+$("scanBtn").onclick=()=>{
+ let emp=$("employee").value.trim(),veh=$("vehicle").value.trim(),qty=Number($("quantity").value);
+ if(!emp){alert(t("employeeRequired"));return} if(!veh){alert(t("vehicleRequired"));return} if(!Number.isInteger(qty)||qty<1){alert(lang==="ar"?"أدخل كمية صحيحة":"Enter a valid quantity");return}
+ let permit=$("permit").checked,match=$("match").checked,ok=permit&&match;
+ let reason=!permit?t("permitMissing"):!match?t("mismatch"):t("accepted");
+ let rec={id:"SG-"+Date.now(),time:new Date().toLocaleString(),gate:$("gate").value,direction:$("direction").value,employee:emp,vehicle:veh,material:materialName(),qty,tag:$("tagid").value.trim(),permit,match,ok,reason};
+ logs.unshift(rec);localStorage.setItem("sg_logs",JSON.stringify(logs));renderStats();renderHistory();
+ let box=$("result");box.className="result "+(ok?"ok":"no");box.innerHTML="<strong>"+(ok?"✓ "+t("accepted"):"✕ "+t("denied"))+"</strong><div style='margin-top:7px;font-size:13px'>"+reason+"</div><div style='margin-top:7px;font-size:12px'>"+t("saved")+" • "+rec.id+"</div>";
+};
+function renderStats(){$("totalCount").textContent=logs.length;$("approvedCount").textContent=logs.filter(x=>x.ok).length;$("rejectedCount").textContent=logs.filter(x=>!x.ok).length}
+function renderHistory(){let list=$("historyList");if(!list)return;if(!logs.length){list.innerHTML='<p class="muted">'+t("empty")+'</p>';return}list.innerHTML=logs.map(x=>`<div class="logitem"><div class="logtop"><strong>${x.id}</strong><span class="tag ${x.ok?"ok":"no"}">${x.ok?t("statusOk"):t("statusNo")}</span></div><div class="logmeta">${t("time")}: ${x.time}<br>${x.gate} • ${x.direction==="out"?t("directionOut"):t("directionIn")}<br>${x.material} × ${x.qty}<br>${t("employee")}: ${x.employee} • ${t("vehicle")}: ${x.vehicle}<br>${x.reason}</div></div>`).join("")}
+$("clearBtn").onclick=()=>{if(confirm(t("confirmClear"))){logs=[];localStorage.setItem("sg_logs","[]");renderStats();renderHistory();$("result").className="result"}};
+$("exportBtn").onclick=()=>{if(!logs.length){alert(t("exportEmpty"));return}let rows=[["ID","Time","Gate","Direction","Employee","Vehicle","Material","Quantity","RFID","Permit","Match","Status"],...logs.map(x=>[x.id,x.time,x.gate,x.direction,x.employee,x.vehicle,x.material,x.qty,x.tag,x.permit,x.match,x.ok?"APPROVED":"REJECTED"])];let csv="\ufeff"+rows.map(r=>r.map(v=>'"'+String(v??"").replaceAll('"','""')+'"').join(",")).join("\n");let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="SmartGate360-demo-log.csv";a.click();URL.revokeObjectURL(a.href)};
+applyLang();
+if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script>
+</body></html>
